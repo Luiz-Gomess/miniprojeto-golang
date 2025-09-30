@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"os"
+	"sort"
 	"time"
 )
 
@@ -49,8 +51,22 @@ func Actions(action string, numeros []int) []int {
 		}
 
 	case "2":
-		fmt.Println(numeros)
+		listaOrdenada, err := ExibirLista(numeros)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(listaOrdenada)
+		}
 		time.Sleep(1 * time.Second)
+
+		fmt.Println("Salvar? (s/n)")
+		var salvar string
+		fmt.Scanln(&salvar)
+		if salvar == "s" {
+			SalvarNumerosEmArquivo(listaOrdenada)
+		} else {
+
+		}
 
 	case "3":
 		novosNumeros, err := RemoverPorIndice(numeros)
@@ -67,6 +83,7 @@ func Actions(action string, numeros []int) []int {
 		fmt.Println("Média: ", media)
 		fmt.Println("Máximo: ", maximo)
 		fmt.Println("Mínimo: ", minimo)
+		time.Sleep(1 * time.Second)
 
 	case "5":
 		resultado, err := DivisaoSegura()
@@ -107,6 +124,57 @@ func NovoNumero() (int, error) {
 	}
 
 	return novoNumero, nil
+}
+
+// Função para exibição da lista
+func ExibirLista(numeros []int) ([]int, error) {
+
+	var ordem string
+	var isPar string
+	numerosOrdenados := numeros
+
+	// Filtra por valores pares (opcional)
+	fmt.Println("Somente valores pares? (s/n)")
+	fmt.Scanln(&isPar)
+
+	switch isPar {
+	case "s":
+		numerosOrdenados = filtrarPares(numerosOrdenados)
+	case "n":
+		// Segue adiante
+	default:
+		return nil, errors.New("Escolha uma das opções: 's' ou 'n'")
+	}
+
+	// Escolhe a ordem
+	fmt.Println("Ordem Crescente (c) ou Decrescente (d)? (Pressione 'n' para sair)")
+	fmt.Scanln(&ordem)
+
+	switch ordem {
+	case "c":
+		sort.Ints(numerosOrdenados)
+	case "d":
+		sort.Slice(numerosOrdenados, func(i, j int) bool {
+			return numerosOrdenados[i] > numerosOrdenados[j]
+		})
+	case "n":
+		// Segue adiante sem ordenação
+	default:
+		return nil, errors.New("Escolha uma das opções: 'c', 'd' ou 'n'")
+	}
+
+	// Retorna os valores organizados
+	return numerosOrdenados, nil
+}
+
+func filtrarPares(numeros []int) []int {
+	pares := []int{}
+	for _, numero := range numeros {
+		if numero%2 == 0 {
+			pares = append(pares, numero)
+		}
+	}
+	return pares
 }
 
 // Função para a ação de remoção
@@ -189,4 +257,17 @@ func Minimo(numeros []int) int {
 	}
 
 	return minimo
+}
+
+func SalvarNumerosEmArquivo(numeros []int) {
+	nomeArquivo := "lista_numeros.txt"
+
+	arquivo, err := os.Create(nomeArquivo)
+	if err != nil {
+		fmt.Printf("Erro criando arquivo: %v\n", err)
+	}
+
+	defer arquivo.Close()
+
+	_, err = fmt.Fprintln(arquivo, numeros)
 }
