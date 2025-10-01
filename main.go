@@ -12,7 +12,7 @@ import (
 func main() {
 	fmt.Println("Gerenciador de Números")
 
-	numeros := []int{3, 4, 5, 6, 7, 8, 9, 2, 143, 56, 32}
+	numeros := []int{3, 4, 5, 6, 7, 8, 9, 2, 143, 56, 32} // Slice com valores padrões para testes
 	var action string
 
 	MostrarCabecalho()
@@ -29,6 +29,7 @@ func main() {
 	fmt.Println("Encerrando Aplicação...")
 }
 
+// Apresenta o cabeçalho com o menu de opções
 func MostrarCabecalho() {
 	fmt.Println("+-----------------------------+")
 	fmt.Println("|      Escolha sua ação ")
@@ -37,6 +38,8 @@ func MostrarCabecalho() {
 	fmt.Print("\nAção: ")
 }
 
+// Chama as funções referente a cada opção do menu.
+// Possuem uma espera de 1 segundo para facilitar a visualização do resultado de uma opção.
 func Actions(action string, numeros []int) []int {
 
 	switch action {
